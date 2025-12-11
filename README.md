@@ -16,7 +16,7 @@ Certifique-se de ter o Python instalado na sua máquina.
 
 ### Clone o repositório:
 
-git clone https://github.com/seu-usuario/seu-repositorio.git
+git clone https://github.com/GiuseppCalderaro/Netara.git
 
 ### Acesse a pasta do projeto:
 
@@ -27,10 +27,11 @@ cd seu-repositorio
 python main.py
 
 ## Estrutura
+```bash
 /projeto
  ├── main.py     # Arquivo principal que imprime "Hello Word"
  └── README.md   # Documentação do projeto
-
+```
 ## Funcionalidade
 
 Exibe a mensagem "Hello Word" no console.
