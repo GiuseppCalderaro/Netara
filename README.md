@@ -15,17 +15,17 @@ GitHub
 Certifique-se de ter o Python instalado na sua máquina.
 
 ### Clone o repositório:
-
+```bash
 git clone https://github.com/GiuseppCalderaro/Netara.git
-
+```
 ### Acesse a pasta do projeto:
-
+```bash
 cd seu-repositorio
-
+```
 ### Execute o arquivo principal:
-
+```bash
 python main.py
-
+```
 ## Estrutura
 ```bash
 /projeto
