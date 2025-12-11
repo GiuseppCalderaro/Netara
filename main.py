@@ -4,17 +4,21 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     ContextTypes, 
-    MessageHandler
+    MessageHandler,
+    filters
 )
 
 TOKEN = "7878212761:AAGsDzvKHa4333__o9TJosfeth4-wD5CPO8"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Olá! Sou o Netarã 👋")
+    await update.message.reply_text("Hai! Owî Netara 👋")
 
+async def hai(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'(?i)^hai$'), hai))
     app.add_handler(CommandHandler("start", start))
 
     print("Bot iniciado!")
