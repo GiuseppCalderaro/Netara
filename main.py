@@ -1,1 +1,44 @@
-print("Hello World")
+import os
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    ContextTypes, 
+    MessageHandler,
+    filters
+)
+
+TOKEN = "7878212761:AAGsDzvKHa4333__o9TJosfeth4-wD5CPO8"
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Hai! Owî Netara 👋")
+    await update.message.reply_text("O que você busca?", reply_markup=criar_menu())
+
+async def hai(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
+
+def criar_menu():
+    botoes = [
+        [InlineKeyboardButton("🛒 Supermercados", callback_data="super")],
+        [InlineKeyboardButton("🏦 Bancos", callback_data="bank")],
+        [InlineKeyboardButton("💊 Farmácias", callback_data="farm")],
+        [InlineKeyboardButton("🍽 Restaurantes", callback_data="rest")]
+    ]
+    return InlineKeyboardMarkup(botoes)
+
+
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'(?i)^hai$'), hai))
+    app.add_handler(CommandHandler("start", start))
+
+    print("Bot iniciado!")
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
