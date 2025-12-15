@@ -1,5 +1,11 @@
 import os
-from telegram import Update
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup
+)
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -12,9 +18,26 @@ TOKEN = "7878212761:AAGsDzvKHa4333__o9TJosfeth4-wD5CPO8"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Hai! Owî Netara 👋")
+    await update.message.reply_text("Ahce wai mepora?", reply_markup=criar_menu())
 
 async def hai(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start(update, context)
+
+def criar_menu():
+    botoes = [
+        [InlineKeyboardButton("🛒 Warawantacho", callback_data="super")],
+        [InlineKeyboardButton("🏦 Puranta mohkacho", callback_data="bank")],
+        [InlineKeyboardButton("💊 Kasarai mînî", callback_data="farm")],
+        [InlineKeyboardButton("🍽 Kesereskmacho", callback_data="rest")]
+    ]
+    return InlineKeyboardMarkup(botoes)
+
+def pedir_localizacao():
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton("📍 Enviar Localização", request_location=True)]],
+        one_time_keyboard=True,
+        resize_keyboard=True
+    )
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
