@@ -11,6 +11,7 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes, 
     MessageHandler,
+    CallbackQueryHandler,
     filters
 )
 
@@ -22,9 +23,34 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=menu_inicial()
     )
 
+
 async def hai(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start(update, context)
 
+
+async def clique_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "pedir_localizacao":
+        await query.message.reply_text(
+            "Apikmoko onî makataw arpotome awekenî 📍",
+            reply_markup=botao_localizacao()
+        )
+
+    elif query.data == "ajuda":
+        await query.message.reply_text(
+            "Enko onî ekatîmtopo, ero ahcamhoke ahce wa ciira ekenî yentopo celular yaka:"
+        )
+        await query.message.reply_text(
+            "https://youtu.be/9gfjPUVnlE0",
+            disable_web_page_preview=True
+        )
+
+        await query.message.reply_text(
+            "Pona, apikmoko 📍 arpopoko ekenî yentopo!",
+            reply_markup=botao_localizacao()
+        )
 
 def menu_inicial():
     botoes = [
@@ -43,6 +69,7 @@ def criar_menu():
     ]
     return InlineKeyboardMarkup(botoes)
 
+
 def pedir_localizacao():
     return ReplyKeyboardMarkup(
         [[KeyboardButton("📍 Enviar Localização", request_location=True)]],
@@ -50,9 +77,17 @@ def pedir_localizacao():
         resize_keyboard=True
     )
 
+def botao_localizacao():
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton("📍 Arpopoko ekenî yentopo", request_location=True)]],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'(?i)^hai$'), hai))
+    app.add_handler(CallbackQueryHandler(clique_menu))
     app.add_handler(CommandHandler("start", start))
 
     print("Bot iniciado!")
