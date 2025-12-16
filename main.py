@@ -4,7 +4,8 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
-    ReplyKeyboardMarkup
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove
 )
 from telegram.ext import (
     ApplicationBuilder,
@@ -52,6 +53,24 @@ async def clique_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=botao_localizacao()
         )
 
+
+async def receber_localizacao(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    location = update.message.location
+
+    context.user_data["lat"] = location.latitude
+    context.user_data["lon"] = location.longitude
+
+    await update.message.reply_text(
+        "📍 Localização recebida!",
+        reply_markup=ReplyKeyboardRemove()
+    )
+
+    await update.message.reply_text(
+        "Ahce wai mepora?",
+        reply_markup=menu_locais()
+    )
+
+
 def menu_inicial():
     botoes = [
         [InlineKeyboardButton("📍 Arpopoko ekenî yentopo", callback_data="pedir_localizacao")],
@@ -60,7 +79,7 @@ def menu_inicial():
     return InlineKeyboardMarkup(botoes)
 
 
-def criar_menu():
+def menu_locais():
     botoes = [
         [InlineKeyboardButton("🛒 Warawantacho", callback_data="super")],
         [InlineKeyboardButton("🏦 Puranta mohkacho", callback_data="bank")],
@@ -77,6 +96,7 @@ def pedir_localizacao():
         resize_keyboard=True
     )
 
+
 def botao_localizacao():
     return ReplyKeyboardMarkup(
         [[KeyboardButton("📍 Arpopoko ekenî yentopo", request_location=True)]],
@@ -84,11 +104,14 @@ def botao_localizacao():
         one_time_keyboard=True
     )
 
+
+
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'(?i)^hai$'), hai))
     app.add_handler(CallbackQueryHandler(clique_menu))
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.LOCATION, receber_localizacao))
 
     print("Bot iniciado!")
     app.run_polling()
