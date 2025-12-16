@@ -37,8 +37,9 @@ LOCAIS = {
         ("Vita Farma 24h", -1.757026408341188, -55.85914746512182),
     ],
     "rest": [
-        ("Restaurante Local", -1.452, -48.488),
-        ("Cantina Comunitária", -1.456, -48.486),
+        ("Restaurante Mariano", -1.7626546450476492, -55.86317852579337),
+        ("Telma's Churrascaria", -1.7531291267631433, -55.85784534650171),
+        ("Mr. Burguer Orixi", -1.7523533957916564, -55.85307896288615),
     ]
 }
 
@@ -80,6 +81,7 @@ def menu_voltar():
 def teclado_localizacao():
     teclado = [[KeyboardButton("📍Arpopoko ekenî yentopo", request_location=True)]]
     return ReplyKeyboardMarkup(teclado, resize_keyboard=True, one_time_keyboard=True)
+
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
     # Fórmula para calcular distancia: Giusepp Calderaro
@@ -225,10 +227,71 @@ async def tratar_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def interpretar_texto(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    texto = update.message.text.lower().strip()
+
+    local = context.user_data.get("localizacao")
+    if local is None:
+        await update.message.reply_text(
+            "📍 arpopoko awekenî yentopo:",
+            reply_markup=teclado_localizacao()
+        )
+        return
+    lat, lon = local.latitude, local.longitude
+
+    palavras_categoria = {
+        "super": ["super", "mercado", "supermercado", "mercearia", "warawantacho"],
+        "farm": ["farmácia", "remédio", "kasarai mînî"],
+        "rest": ["comida", "almoço", "restaurante", "churrascaria", "lanche", "kesereskmacho"],
+        "bank": ["banco", "puranta mohkacho"]
+    }
+
+    categoria = None
+    for cat, palavras in palavras_categoria.items():
+        if any(p in texto for p in palavras):
+            categoria = cat
+            break
+
+    if categoria is None:
+        await update.message.reply_text(
+            "❓ Entara weexi. Ahce wai mepora?\n\n"
+            "🛒 Warawantacho\n🏦 Puranta mohkacho\n💊 Kasarai mînî\n🍽 Kesereskmacho\n\n"
+            "Apikmoko yîramanîtopo makataw:",
+            reply_markup=menu_locais()
+        )
+        return
+
+    #await update.message.reply_text("🔎 Buscando lugares próximos...")
+    locais_categoria = LOCAIS.get(categoria, [])
+    lugares = encontrar_mais_proximo(lat, lon, locais_categoria)
+
+    if not lugares:
+        await update.message.reply_text(
+            "⚠ Nenhum local encontrado.",
+            reply_markup=menu_voltar()
+        )
+        return
+
+    #await update.message.reply_text(f"📍 Encontrei {len(lugares)} lugares próximos:")
+
+    for nome, lat_loc, lon_loc, dist in lugares:
+        await update.message.reply_text(
+            f"📍 *{nome}*\n📏 On wicakî moxenonî: *{dist:.2f} km*",
+            parse_mode="Markdown"
+        )
+        await update.message.reply_location(latitude=lat_loc, longitude=lon_loc)
+
+    await update.message.reply_text(
+        "Awetîrama xe mai mepora katî anarî hara?",
+        reply_markup=menu_voltar()
+    )
+
+
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'(?i)^hai$'), hai))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, interpretar_texto))
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.LOCATION, receber_localizacao))
     app.add_handler(
