@@ -17,11 +17,22 @@ from telegram.ext import (
 TOKEN = "7878212761:AAGsDzvKHa4333__o9TJosfeth4-wD5CPO8"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hai! Owî Netara 👋")
-    await update.message.reply_text("Ahce wai mepora?", reply_markup=criar_menu())
+    await update.message.reply_text(
+        "Hai! Owî Netara 👋",
+        reply_markup=menu_inicial()
+    )
 
 async def hai(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start(update, context)
+
+
+def menu_inicial():
+    botoes = [
+        [InlineKeyboardButton("📍 Arpopoko ekenî yentopo", callback_data="pedir_localizacao")],
+        [InlineKeyboardButton("❓ Awakrono maxe mai", callback_data="ajuda")]
+    ]
+    return InlineKeyboardMarkup(botoes)
+
 
 def criar_menu():
     botoes = [
